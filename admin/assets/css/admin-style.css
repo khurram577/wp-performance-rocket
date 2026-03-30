@@ -139,29 +139,34 @@ input:checked + .wppr-slider:before {
 	border-radius: 50%;
 }
 
-/* Speed Test */
+/* Custom Tester Results */
 .wppr-results {
 	display: flex;
-	gap: 30px;
+	flex-direction: column;
+	gap: 20px;
 	margin-top: 30px;
 }
-.wppr-score-card {
+.wppr-main-score {
 	background: #f6f7f7;
-	padding: 20px;
+	padding: 30px;
 	border-radius: 8px;
 	text-align: center;
-	flex: 1;
+	border: 1px solid #e2e4e7;
+}
+.wppr-main-score h3 {
+	margin-top: 0;
+	color: #1d2327;
 }
 .wppr-score-circle {
-	width: 100px;
-	height: 100px;
+	width: 120px;
+	height: 120px;
 	border-radius: 50%;
 	background: #fff;
 	border: 8px solid #e2e4e7;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 32px;
+	font-size: 36px;
 	font-weight: bold;
 	margin: 20px auto 0;
 	color: #1d2327;
@@ -170,6 +175,37 @@ input:checked + .wppr-slider:before {
 .wppr-score-circle.good { border-color: #0cce6b; color: #0cce6b; }
 .wppr-score-circle.average { border-color: #ffa400; color: #ffa400; }
 .wppr-score-circle.poor { border-color: #ff4e42; color: #ff4e42; }
+
+.wppr-metrics-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+}
+.wppr-metric-box {
+	background: #fff;
+	border: 1px solid #e2e4e7;
+	padding: 20px;
+	border-radius: 8px;
+	text-align: center;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.wppr-metric-box h4 {
+	margin: 0 0 10px 0;
+	color: #646970;
+	font-size: 14px;
+}
+.wppr-metric-value {
+	display: block;
+	font-size: 24px;
+	font-weight: 700;
+	color: #1d2327;
+	margin-bottom: 5px;
+}
+.wppr-metric-box p {
+	margin: 0;
+	font-size: 12px;
+	color: #8c8f94;
+}
 
 #wppr-db-message {
 	margin-top: 10px;

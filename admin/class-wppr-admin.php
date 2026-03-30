@@ -1,11 +1,37 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+require_once WPPR_PLUGIN_DIR . 'includes/class-wppr-analyzer.php';
+
 class WPPR_Admin {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		
+		$analyzer = new WPPR_Analyzer();
+		add_action( 'wp_ajax_wppr_run_analysis', array( $analyzer, 'ajax_run_analysis' ) );
+		add_action( 'wp_ajax_wppr_optimize_all', array( $this, 'ajax_optimize_all' ) );
+	}
+
+	public function ajax_optimize_all() {
+		check_ajax_referer( 'wppr_admin_nonce', 'security' );
+		
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Unauthorized' );
+		}
+
+		// Clear cache
+		$caching = new WPPR_Caching();
+		$caching->clear_all_cache();
+
+		// Clean database
+		global $wpdb;
+		$wpdb->query( "DELETE FROM $wpdb->posts WHERE post_type = 'revision'" );
+		$wpdb->query( "DELETE FROM $wpdb->posts WHERE post_status = 'auto-draft'" );
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_%' OR option_name LIKE '_site_transient_%'" );
+
+		wp_send_json_success( array( 'message' => __( 'Website fully optimized! Cache cleared and database cleaned.', 'wp-performance-rocket' ) ) );
 	}
 
 	public function add_admin_menu() {
@@ -24,6 +50,7 @@ class WPPR_Admin {
 		if ( 'toplevel_page_wppr-settings' !== $hook ) {
 			return;
 		}
+		
 		wp_enqueue_style( 'wppr-admin-style', WPPR_PLUGIN_URL . 'admin/assets/css/admin-style.css', array(), WPPR_VERSION );
 		wp_enqueue_script( 'wppr-admin-script', WPPR_PLUGIN_URL . 'admin/assets/js/admin-script.js', array( 'jquery' ), WPPR_VERSION, true );
 		

@@ -1,9 +1,8 @@
 <?php
 /**
  * Plugin Name: WP Performance Rocket
- * Plugin URI: https://github.com/Khurram577
  * Description: Advanced performance optimization plugin focusing on caching, file optimization, image lazy loading, and database cleanup.
- * Version: 1.0.1
+ * Version: 1.0.3
  * Author: Khurram Ali
  * Author URI: https://github.com/Khurram577
  * Text Domain: wp-performance-rocket
@@ -13,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'WPPR_VERSION', '1.0.1' );
+define( 'WPPR_VERSION', '1.0.3' );
 define( 'WPPR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPPR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 

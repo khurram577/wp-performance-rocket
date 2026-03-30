@@ -44,7 +44,42 @@ jQuery(document).ready(function($) {
 		});
 	});
 
-	// Speed Test via PageSpeed Insights API
+	// Optimize Entire Website
+	$('#wppr-optimize-all').on('click', function(e) {
+		e.preventDefault();
+		var $btn = $(this);
+		var $spinner = $('#wppr-optimize-spinner');
+		var $msg = $('#wppr-optimize-message');
+
+		$spinner.addClass('is-active');
+		$btn.prop('disabled', true);
+		$msg.text('Optimizing...').css('color', '#646970');
+
+		$.ajax({
+			url: wppr_ajax.ajax_url,
+			type: 'POST',
+			data: {
+				action: 'wppr_optimize_all',
+				security: wppr_ajax.nonce
+			},
+			success: function(response) {
+				$spinner.removeClass('is-active');
+				$btn.prop('disabled', false);
+				if (response.success) {
+					$msg.text(response.data.message).css('color', '#0cce6b');
+				} else {
+					$msg.text('Optimization failed.').css('color', '#ff4e42');
+				}
+			},
+			error: function() {
+				$spinner.removeClass('is-active');
+				$btn.prop('disabled', false);
+				$msg.text('Request failed.').css('color', '#ff4e42');
+			}
+		});
+	});
+
+	// Custom Performance Analyzer
 	$('#wppr-run-test').on('click', function(e) {
 		e.preventDefault();
 		var $btn = $(this);
@@ -58,52 +93,46 @@ jQuery(document).ready(function($) {
 			return;
 		}
 
-		// Validate if it's a localhost URL
-		try {
-			var urlObj = new URL(targetUrl);
-			if (urlObj.hostname === 'localhost' || urlObj.hostname === '127.0.0.1' || urlObj.hostname.endsWith('.local')) {
-				alert('Google PageSpeed Insights requires a publicly accessible URL. It cannot test localhost or local development environments. Please enter a live URL.');
-				return;
-			}
-		} catch (err) {
-			alert('Please enter a valid URL format (e.g., https://example.com).');
-			return;
-		}
-		
 		$spinner.addClass('is-active');
 		$btn.prop('disabled', true);
 		$results.hide();
 		
-		var apiUrl = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=' + encodeURIComponent(targetUrl);
-
-		// Run Desktop Test
-		$.get(apiUrl + '&strategy=desktop', function(data) {
-			var score = Math.round(data.lighthouseResult.categories.performance.score * 100);
-			updateScoreCircle('#score-desktop', score);
-			
-			// Run Mobile Test sequentially
-			$.get(apiUrl + '&strategy=mobile', function(dataMobile) {
-				var scoreMobile = Math.round(dataMobile.lighthouseResult.categories.performance.score * 100);
-				updateScoreCircle('#score-mobile', scoreMobile);
+		$.ajax({
+			url: wppr_ajax.ajax_url,
+			type: 'POST',
+			data: {
+				action: 'wppr_run_analysis',
+				security: wppr_ajax.nonce,
+				url: targetUrl
+			},
+			success: function(response) {
+				$spinner.removeClass('is-active');
+				$btn.prop('disabled', false);
 				
-				$spinner.removeClass('is-active');
-				$btn.prop('disabled', false);
-				$results.fadeIn();
-			}).fail(function() {
-				$('#score-mobile').text('Err');
-				$spinner.removeClass('is-active');
-				$btn.prop('disabled', false);
-				$results.fadeIn();
-			});
+				if (response.success) {
+					var data = response.data;
+					
+					// Update UI
+					updateScoreCircle('#score-overall', data.score);
+					
+					$('#metric-ttfb').text(data.ttfb + ' ms').css('color', data.ttfb < 300 ? '#0cce6b' : (data.ttfb < 600 ? '#ffa400' : '#ff4e42'));
+					$('#metric-size').text(data.page_size_kb + ' KB').css('color', data.page_size_kb < 1000 ? '#0cce6b' : (data.page_size_kb < 2000 ? '#ffa400' : '#ff4e42'));
+					$('#metric-requests').text(data.total_requests).css('color', data.total_requests < 40 ? '#0cce6b' : (data.total_requests < 80 ? '#ffa400' : '#ff4e42'));
+					$('#metric-dom').text(data.dom_elements).css('color', data.dom_elements < 800 ? '#0cce6b' : (data.dom_elements < 1500 ? '#ffa400' : '#ff4e42'));
+					
+					$('#metric-compression').text(data.is_compressed ? 'Active' : 'Missing').css('color', data.is_compressed ? '#0cce6b' : '#ff4e42');
+					$('#metric-cache').text(data.has_caching ? 'Active' : 'Missing').css('color', data.has_caching ? '#0cce6b' : '#ff4e42');
 
-		}).fail(function(jqXHR) {
-			var errorMsg = 'Failed to run speed test. Please ensure your site is publicly accessible and not behind a firewall or password protection.';
-			if (jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error.message) {
-				errorMsg += '\n\nDetails: ' + jqXHR.responseJSON.error.message;
+					$results.fadeIn();
+				} else {
+					alert('Analysis failed: ' + response.data);
+				}
+			},
+			error: function() {
+				alert('Failed to connect to the server for analysis.');
+				$spinner.removeClass('is-active');
+				$btn.prop('disabled', false);
 			}
-			alert(errorMsg);
-			$spinner.removeClass('is-active');
-			$btn.prop('disabled', false);
 		});
 	});
 
