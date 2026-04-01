@@ -33,7 +33,7 @@ Performance Rocket focuses purely on real performance gains for both **mobile** 
 1. Upload the entire `performance-rocket` folder to the `/wp-content/plugins/` directory.
 2. Visit **Plugins** in your WordPress admin.
 3. Activate the **Performance Rocket** plugin.
-4. Go to **SpeedOptix** in the admin menu to view current speed and optimize your website.
+4. Go to **Performance Rocket** in the admin menu to view current speed and optimize your website.
 
 == Frequently Asked Questions ==
 
