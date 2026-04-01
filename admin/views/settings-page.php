@@ -6,7 +6,7 @@ $options = get_option( 'wppr_settings', array() );
 	<div class="wppr-header">
 		<div class="wppr-logo">
 			<img src="<?php echo esc_url( WPPR_PLUGIN_URL . 'admin/assets/images/rocket-logo.svg' ); ?>" alt="Rocket Logo">
-			<h1>WP Performance Rocket</h1>
+			<h1>Performance Rocket</h1>
 		</div>
 		<p class="wppr-author">By <a href="https://github.com/Khurram577" target="_blank">Khurram Ali</a></p>
 	</div>
