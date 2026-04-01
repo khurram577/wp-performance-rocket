@@ -1,5 +1,5 @@
 === Performance Rocket ===
-Contributors: khuram557
+Contributors: khuram577
 Tags: performance, speed optimization, image compression, minify, lazy load, page speed, optimization, caching
 Requires at least: 6.0
 Tested up to: 6.9
